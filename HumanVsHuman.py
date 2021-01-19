@@ -10,8 +10,8 @@ YELLOW = (200, 200, 0)
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
-SQUARESIZE = 75
-RADIUS = int(SQUARESIZE / 2 - 5)
+sizeOfSquare = 75
+RADIUS = int(sizeOfSquare / 2 - 5)
 
 
 def create_board():
@@ -70,17 +70,17 @@ def winning_move(board, piece):
 def draw_board(board, screen, height):
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT):
-            pygame.draw.rect(screen, BLUE, (c * SQUARESIZE, r * SQUARESIZE + SQUARESIZE, SQUARESIZE, SQUARESIZE))
-            pygame.draw.circle(screen, BLACK, (int(c * SQUARESIZE + SQUARESIZE / 2), int(r * SQUARESIZE + SQUARESIZE + SQUARESIZE / 2)), RADIUS)
+            pygame.draw.rect(screen, BLUE, (c * sizeOfSquare, r * sizeOfSquare + sizeOfSquare, sizeOfSquare, sizeOfSquare))
+            pygame.draw.circle(screen, BLACK, (int(c * sizeOfSquare + sizeOfSquare / 2), int(r * sizeOfSquare + sizeOfSquare + sizeOfSquare / 2)), RADIUS)
 
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT):
             if board[r][c] == 1:
                 pygame.draw.circle(screen, RED, (
-                    int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)), RADIUS)
+                    int(c * sizeOfSquare + sizeOfSquare / 2), height - int(r * sizeOfSquare + sizeOfSquare / 2)), RADIUS)
             elif board[r][c] == 2:
                 pygame.draw.circle(screen, YELLOW, (
-                    int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)), RADIUS)
+                    int(c * sizeOfSquare + sizeOfSquare / 2), height - int(r * sizeOfSquare + sizeOfSquare / 2)), RADIUS)
     pygame.display.update()
 
 
@@ -96,21 +96,21 @@ def play(screen, width, height, board):
                 sys.exit()
 
             if event.type == pygame.MOUSEMOTION:
-                pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+                pygame.draw.rect(screen, BLACK, (0, 0, width, sizeOfSquare))
                 posx = event.pos[0]
                 if turn == 0:
-                    pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
+                    pygame.draw.circle(screen, RED, (posx, int(sizeOfSquare / 2)), RADIUS)
                 else:
-                    pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
+                    pygame.draw.circle(screen, YELLOW, (posx, int(sizeOfSquare / 2)), RADIUS)
             pygame.display.update()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+                pygame.draw.rect(screen, BLACK, (0, 0, width, sizeOfSquare))
                 # print(event.pos)
                 # Ask for Player 1 Input
                 if turn == 0:
                     posx = event.pos[0]
-                    col = int(math.floor(posx / SQUARESIZE))
+                    col = int(math.floor(posx / sizeOfSquare))
 
                     if is_valid_location(board, col):
                         row = get_next_open_row(board, col)
@@ -125,7 +125,7 @@ def play(screen, width, height, board):
                 # # Ask for Player 2 Input
                 else:
                     posx = event.pos[0]
-                    col = int(math.floor(posx / SQUARESIZE))
+                    col = int(math.floor(posx / sizeOfSquare))
 
                     if is_valid_location(board, col):
                         row = get_next_open_row(board, col)
@@ -152,8 +152,8 @@ def main():
 
     pygame.init()
 
-    width = COLUMN_COUNT * SQUARESIZE
-    height = (ROW_COUNT + 1) * SQUARESIZE
+    width = COLUMN_COUNT * sizeOfSquare
+    height = (ROW_COUNT + 1) * sizeOfSquare
 
     size = (width, height)
 
