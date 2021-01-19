@@ -5,4 +5,4 @@ Following features will be availabe in this game:
   # ->Minimax
   # ->Alpha-beta pruning to make search faster
   # ->An effective evaluation function
-  # An early stopping mechanism
+  # ->An early stopping mechanism
