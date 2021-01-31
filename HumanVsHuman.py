@@ -17,7 +17,8 @@ sizeOfSquare = 75
 RADIUS = int(sizeOfSquare / 2 - 5)
 PLAYER = 0
 AI = 1
-
+WINDOW_LENGTH = 4
+EMPTY = 0
 
 def drop_piece(board, row, col, piece):
     board[row][col] = piece
@@ -67,6 +68,79 @@ def winning_move(board, piece):
                 return True
 
 
+def calculate_window(window, piece):
+    score = 0
+    opponent_piece = 1
+    if piece == 1:
+        opponent_piece = 2
+    if window.count(piece) == 4:
+        score += 100
+    elif window.count(piece) == 3 and window.count(EMPTY) == 1:
+        score += 10
+    elif window.count(piece) == 2 and window.count(EMPTY) == 2:
+        score += 5
+
+    if window.count(opponent_piece) == 3 and window.count(EMPTY) == 1:
+        score -= 80
+
+    return score
+
+
+def score_position(board, piece):
+    #for hori
+    score = 0
+    for r in range(ROW_COUNT):
+        row_arr = [int(val) for val in list(board[r, :])]
+        for c in range(COLUMN_COUNT-3):
+            window = row_arr[c:c+WINDOW_LENGTH]
+            score += calculate_window(window, piece)
+
+    #for verti
+    for c in range(COLUMN_COUNT):
+        col_arr = [int(val) for val in list(board[:, c])]
+        for r in range(ROW_COUNT-3):
+            window = col_arr[r:r+WINDOW_LENGTH]
+            score += calculate_window(window, piece)
+
+    #for positive slope
+    for r in range(ROW_COUNT-3):
+        for c in range(COLUMN_COUNT-3):
+            window = [board[r+i][c+i] for i in range(WINDOW_LENGTH)]
+            score += calculate_window(window, piece)
+
+    for r in range(ROW_COUNT - 3):
+        for c in range(COLUMN_COUNT - 3):
+            window = [board[r+3-i][c+i] for i in range(WINDOW_LENGTH)]
+            score += calculate_window(window,piece)
+
+    return score
+
+
+def get_valid_location(board):
+    valid_locations = []
+    for c in range(COLUMN_COUNT):
+        if is_valid_location(board,c):
+            valid_locations.append(c)
+    return valid_locations
+
+def pick_best_move(board,piece):
+    valid_locations = get_valid_location(board)
+    best_score = -1000
+    best_col = random.choice(valid_locations)
+
+    for column in valid_locations:
+        row = get_next_open_row(board,column)
+        temp_board = board.copy()
+        drop_piece(temp_board, row, column, piece)
+        score = score_position(temp_board, piece)
+
+        if score > best_score:
+            best_score = score
+            best_col = column
+
+    return best_col
+
+
 def play(screen, width, height, board):
     fonts = pygame.font.SysFont("monospace", 60)
     game_over = False
@@ -112,8 +186,9 @@ def play(screen, width, height, board):
 
         if turn == AI and not game_over:
 
-            col = random.randint(0,COLUMN_COUNT-1)
-
+            # col = random.randint(0,COLUMN_COUNT-1)
+            col = pick_best_move(board, 2)
+            print('***************',col,'*******************')
             if is_valid_location(board, col):
                 pygame.time.wait(600)
                 row = get_next_open_row(board, col)
