@@ -39,28 +39,24 @@ def print_board(board):
 
 
 def winning_move(board, piece):
-    # Check horizontal locations for win
     for c in range(COLUMN_COUNT - 3):
         for r in range(ROW_COUNT):
             if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][
                 c + 3] == piece:
                 return True
 
-    # Check vertical locations for win
     for c in range(COLUMN_COUNT):
         for r in range(ROW_COUNT - 3):
             if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][
                 c] == piece:
                 return True
 
-    # Check positively sloped diaganols
     for c in range(COLUMN_COUNT - 3):
         for r in range(ROW_COUNT - 3):
             if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and board[r + 3][
                 c + 3] == piece:
                 return True
 
-    # Check negatively sloped diaganols
     for c in range(COLUMN_COUNT - 3):
         for r in range(3, ROW_COUNT):
             if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and board[r - 3][
@@ -127,7 +123,6 @@ def minimax(board, depth, alpha, beta, maxPlayer):
             alpha = max(value, alpha)
             if alpha >= beta:
                 break
-
         return column, value
     else:
         value = math.inf
@@ -154,27 +149,23 @@ def score_position(board, piece):
     center_count = center_array.count(piece)
     score += center_count * 1
 
-    # for hori
     for r in range(ROW_COUNT):
         row_arr = [int(val) for val in list(board[r, :])]
         for c in range(COLUMN_COUNT-3):
             window = row_arr[c:c+WINDOW_LENGTH]
             score += calculate_window(window, piece)
 
-    #for verti
     for c in range(COLUMN_COUNT):
         col_arr = [int(val) for val in list(board[:, c])]
         for r in range(ROW_COUNT-3):
             window = col_arr[r:r+WINDOW_LENGTH]
             score += calculate_window(window, piece)
 
-    #for positive slope
     for r in range(ROW_COUNT-3):
         for c in range(COLUMN_COUNT-3):
             window = [board[r+i][c+i] for i in range(WINDOW_LENGTH)]
             score += calculate_window(window, piece)
 
-    #negative slope
     for r in range(ROW_COUNT - 3):
         for c in range(COLUMN_COUNT - 3):
             window = [board[r+3-i][c+i] for i in range(WINDOW_LENGTH)]
@@ -189,26 +180,6 @@ def get_valid_location(board):
         if is_valid_location(board, c):
             valid_locations.append(c)
     return valid_locations
-
-def pick_best_move(board,piece):
-    valid_locations = get_valid_location(board)
-    print(valid_locations)
-    best_score = -1000
-    best_col = random.choice(valid_locations)
-    print("best_col by rand: ",best_col)
-
-    for column in valid_locations:
-        row = get_next_open_row(board,column)
-        temp_board = board.copy()
-        drop_piece(temp_board, row, column, piece)
-        score = score_position(temp_board, piece)
-
-        if score > best_score:
-            print("best in if: ",score, ' ', column)
-            best_score = score
-            best_col = column
-
-    return best_col
 
 
 def play(screen, width, height, board):
@@ -234,14 +205,10 @@ def play(screen, width, height, board):
                 posx = event.pos[0]
                 if turn == PLAYER:
                     pygame.draw.circle(screen, RED, (posx, int(sizeOfSquare / 2)), RADIUS)
-                # else:
-                #     pygame.draw.circle(screen, YELLOW, (posx, int(sizeOfSquare / 2)), RADIUS)
             pygame.display.update()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.draw.rect(screen, BLACK, (0, 0, width, sizeOfSquare))
-                # print(event.pos)
-                # Ask for Player 1 Input
                 if turn == PLAYER:
                     posx = event.pos[0]
                     col = int(math.floor(posx / sizeOfSquare))
@@ -263,12 +230,8 @@ def play(screen, width, height, board):
 
         if turn == AI and not game_over:
 
-            # col = random.randint(0,COLUMN_COUNT-1)
-            # col = pick_best_move(board, 2)
             col, minimax_score = minimax(board, 5, -math.inf, math.inf, True)
-            # print('***************',col,'*******************')
             if is_valid_location(board, col):
-                # pygame.time.wait(600)
                 row = get_next_open_row(board, col)
                 drop_piece(board, row, col, 2)
 
